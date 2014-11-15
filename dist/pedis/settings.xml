@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <cacheEnabled>false</cacheEnabled>
+  <debug-enabled>true</debug-enabled>
+  <max-age>0</max-age>
+
+  <default-content-type>application/json</default-content-type>
+  <!-- specify which data renderer to use for a particular content type  -->
+  <content-types>
+    <application_x2f_json>org.pentaho.pedis.JsonDataRenderer</application_x2f_json>
+  </content-types>
+
+  <!-- control permissions for this service -->
+  <permissions>
+    <!-- specify generic roles which are allowed to use this service -->
+    <roles>Administrator,Power User,Report Designer</roles>
+    <!-- specify particular users which are allowed to use this service -->
+    <users></users>
+    <!-- specify tenant specific permissions -->
+    <tenants>
+      <!-- Following comment indicates syntax for tenant specific permissions:
+      <sometenantid>
+        <roles>comma-separated list of roles</roles>
+        <users>comma-separated list of users</users>
+      </sometenantid>
+      -->
+    </tenants>
+  </permissions>
+</settings>
+
