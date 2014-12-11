@@ -111,6 +111,10 @@ public class PedisContentGenerator extends BaseContentGenerator{
     return LogFactory.getLog(PedisContentGenerator.class);
   }
 
+  protected void logExeption(Throwable t) {
+    getLogger().error("Unexpected error occurred", t);
+  }
+
   protected OutputStream getOutputStream(String mimeType) throws Exception {
     if (outputHandler == null) {
       throw new Exception("No output handler");
@@ -356,61 +360,6 @@ public class PedisContentGenerator extends BaseContentGenerator{
     IDatasourceMgmtService datasourceMgmtService = getDatasourceMgmtService();
     List<IDatabaseConnection> datasources = datasourceMgmtService.getDatasources();
     responseData = datasources;
-  }
-
-  protected void handleConnection1() throws Exception {
-    String name = path[1];
-    System.out.println("Try to retrieve named connection: " + name);
-    int m = 0;
-
-    //method 1
-    m++;
-    try {
-      System.out.println("Trying method " + m);
-      org.pentaho.platform.api.engine.ILogger ilogger = this;
-      org.pentaho.commons.connection.IPentahoConnection pentahoConnection = org.pentaho.platform.engine.services.connection.PentahoConnectionFactory.getConnection(
-        org.pentaho.commons.connection.IPentahoConnection.SQL_DATASOURCE, name, session, ilogger
-      );
-      org.pentaho.platform.plugin.services.connections.sql.SQLConnection sqlConnection = (org.pentaho.platform.plugin.services.connections.sql.SQLConnection)pentahoConnection;
-      java.sql.Connection connection = sqlConnection.getNativeConnection();
-      System.out.println(connection.getClass());
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    System.out.println("Tried method " + m);
-
-    //method 2
-    m++;
-    try {
-      System.out.println("Trying method " + m);
-      org.pentaho.platform.api.data.IDBDatasourceService idbDatasourceService = PentahoSystem.getObjectFactory().get(org.pentaho.platform.api.data.IDBDatasourceService.class, null);
-      javax.sql.DataSource datasource = idbDatasourceService.getDataSource(name);
-      java.sql.Connection connection = datasource.getConnection();
-      System.out.println(connection.getClass());
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    System.out.println("Tried method " + m);
-
-    //method 3
-    m++;
-    try {
-      System.out.println("Trying method " + m);
-      org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService datasourceMgmtService = PentahoSystem.get(
-        IDatasourceMgmtService.class, session
-      );
-      org.pentaho.database.model.IDatabaseConnection databaseConnection = datasourceMgmtService.getDatasourceByName(name);
-      org.pentaho.di.core.database.DatabaseMeta databaseMeta = org.pentaho.database.util.DatabaseUtil.convertToDatabaseMeta(databaseConnection);
-      org.pentaho.di.core.database.Database database = new org.pentaho.di.core.database.Database(databaseMeta);
-      java.sql.Connection connection = database.getConnection();
-      System.out.println(connection.getClass());
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    System.out.println("Tried method " + m);
   }
 
   protected void handleConnection() throws Exception {
@@ -734,10 +683,6 @@ public class PedisContentGenerator extends BaseContentGenerator{
         if (PATH_CONNECTIONS.equals(path[0])) {
           handleConnection();
         }
-        else
-        if ("connections1".equals(path[0])) {
-          handleConnection1();
-        }
         else {
           throwNotFound();
         }
@@ -839,6 +784,7 @@ public class PedisContentGenerator extends BaseContentGenerator{
       cleanUp();
     }
     if (pedisException != null) {
+      logExeption(pedisException);
       response.setStatus(pedisException.getCode());
       pedisException.sendError(response);
     }
