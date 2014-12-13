@@ -77,6 +77,7 @@ Pedis.prototype = {
                   errorText = e.toString();
                 }
               }
+              break;
             default:
               if (typeof(options.failure) === "function") {
                 options.failure.call(
