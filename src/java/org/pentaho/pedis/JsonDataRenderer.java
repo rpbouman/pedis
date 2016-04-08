@@ -234,6 +234,7 @@ public class JsonDataRenderer implements IDataRenderer {
     int columnCount = metaData.getColumnCount();
     int i;
     String name;
+    Object value;
     String[] names = new String[columnCount+1];
     for (i = 1; i <= columnCount; i++) {
       name = metaData.getColumnName(i);
@@ -252,11 +253,22 @@ public class JsonDataRenderer implements IDataRenderer {
     int j = 0;
     startArray();
     while (resultSet.next()) {
-      if (j++ > 0) separator();
+      if (j++ > 0) {
+        separator();
+      }
       startObject();
       for (i = 1; i <= columnCount; i++){
-        if (i > 1) separator();
-        renderObjectMember(names[i], resultSet.getObject(i));
+        if (i > 1) {
+          separator();
+        }
+        name = names[i];
+        try {
+          value = resultSet.getObject(i);
+        } 
+        catch (Exception ex){
+          value = ex;
+        }
+        renderObjectMember(name, value);
       }
       endObject();
     }
@@ -444,7 +456,7 @@ public class JsonDataRenderer implements IDataRenderer {
           field = (Field)member;
           try {
             value = field.get(object);
-          } catch (Exception fe) {
+          } catch (Throwable fe) {
             value = fe;
           }
         }
@@ -454,7 +466,7 @@ public class JsonDataRenderer implements IDataRenderer {
           try {
             value = method.invoke(object, null);
           }
-          catch (Exception me) {
+          catch (Throwable me) {
             value = me;
           }
         }
