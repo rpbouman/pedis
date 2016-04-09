@@ -267,6 +267,7 @@ public class JsonDataRenderer implements IDataRenderer {
         } 
         catch (Exception ex){
           value = ex;
+          ex.printStackTrace();
         }
         renderObjectMember(name, value);
       }
